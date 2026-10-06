@@ -38,7 +38,7 @@ export default function CursorChip() {
       aria-hidden="true"
       style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
     >
-      View case study
+      Click to open
     </div>
   );
 }

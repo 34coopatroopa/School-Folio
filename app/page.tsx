@@ -9,8 +9,11 @@ import GridOverlay from "@/components/GridOverlay";
 import Clock from "@/components/Clock";
 import DogEasterEgg from "@/components/DogEasterEgg";
 import SkillsNetwork from "@/components/SkillsNetwork";
+import SeniorDesign from "@/components/SeniorDesign";
+import Accordion from "@/components/Accordion";
+import DocChips from "@/components/DocChips";
 import { useRevealAll } from "@/hooks/useRevealAll";
-import { projects, experience, contactLinks, photos, photoPool } from "@/lib/content";
+import { projects, experience, contactLinks, photos, photoPool, careerObjective } from "@/lib/content";
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -23,6 +26,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headedOpen, setHeadedOpen] = useState(false);
   const [scenePhotos, setScenePhotos] = useState<{ hero: string; about: string }>({
     hero: photos.ridgelines,
     about: photos.overcast,
@@ -99,7 +103,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* About */}
+        {/* About + where I'm headed */}
         <section id="about" className="about">
           {/* eslint-disable-next-line @next/next/no-img-element -- custom 78%-height mask can't use next/image's fill sizing */}
           <img className="bandPhoto" src={scenePhotos.about} alt="" aria-hidden="true" loading="lazy" />
@@ -119,12 +123,30 @@ export default function Home() {
               <p>
                 By day, that&rsquo;s infrastructure engineering at QCI and leading a
                 fifteen-person technical team at Iowa State. By night, it&rsquo;s usually a
-                homelab, a half-finished processor, or whatever currently has its case open on
-                my desk.
+                half-finished processor or whatever currently has its case open on my desk.
               </p>
-              <a href="#experience" className="aboutLink mono">
-                Explore about →
-              </a>
+              <div className={`headed${headedOpen ? " is-open" : ""}`}>
+                <button
+                  type="button"
+                  className="aboutLink mono headedToggle"
+                  aria-expanded={headedOpen}
+                  aria-controls="headed-body"
+                  onClick={() => setHeadedOpen((v) => !v)}
+                >
+                  Where I&rsquo;m headed <span className="headedPlus" aria-hidden="true">+</span>
+                </button>
+                <div id="headed-body" className="headedBody" inert={!headedOpen}>
+                  <div className="accInner">
+                    <div className="headedText">
+                      {careerObjective.map((para, i) => (
+                        <p key={para} style={{ transitionDelay: `${headedOpen ? 120 + i * 90 : 0}ms` }}>
+                          {para}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="aboutCloser reveal">
@@ -132,37 +154,72 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Senior Design */}
+        <section id="senior-design" className="work seniorDesign">
+          <GridOverlay tone="ink" alpha={0.07} />
+          <p className="sectionLabel on-ink mono reveal">(01) — Senior Design</p>
+          <div className="reveal">
+            <SeniorDesign />
+          </div>
+        </section>
+
         {/* Selected Work */}
         <section id="work" className="work">
           <GridOverlay tone="ink" alpha={0.07} />
-
           <div className="sectionHeader workHeader reveal">
             <div>
-              <p className="sectionLabel on-ink mono">(01) — Work</p>
+              <p className="sectionLabel on-ink mono">(02) — Work</p>
               <h2 className="sectionHeading">Selected work</h2>
             </div>
-            <p className="support">
-              Six systems built end to end — encryption, network tooling, trading platforms,
-              and hardware.
-            </p>
+            <p className="support">Hover for the gist. Click for the whole story.</p>
           </div>
-
-          <div className="projects">
-            {projects.map((p) => (
-              <a key={p.num} href={p.href} data-project="1" className="projectRow">
-                <span className="pnum mono">{p.num}</span>
-                <span className="pbody">
-                  <span className="ptitle">{p.title}</span>
-                  <span className="pcategory mono">{p.category}</span>
-                  <span className="pdesc">{p.description}</span>
-                  <span className="pmeta mono">
-                    <span className="year">{p.year}</span>
-                    <span>{p.stack}</span>
-                    <span className="status">{p.status}</span>
-                  </span>
-                </span>
-              </a>
-            ))}
+          <div className="reveal">
+            <Accordion
+              tone="ink"
+              items={projects.map((p) => ({
+                id: p.num,
+                head: (
+                  <>
+                    <span className="pnum mono">{p.num}</span>
+                    <span className="ptitle">{p.title}</span>
+                    <span className="pcategory mono">{p.category}</span>
+                    <span className="pmeta mono">
+                      <span className="year">{p.year}</span>
+                      <span className="status">{p.status}</span>
+                    </span>
+                  </>
+                ),
+                peek: <p className="accPeekText">{p.description}</p>,
+                body: (
+                  <div className="caseGrid">
+                    <div className="caseBlock caseBlockWide">
+                      <p className="caseLead">{p.overview}</p>
+                    </div>
+                    <div className="caseBlock">
+                      <p className="caseLabel mono">My role</p>
+                      <p>{p.role}</p>
+                    </div>
+                    <div className="caseBlock">
+                      <p className="caseLabel mono">What I learned</p>
+                      <ul className="chipList">
+                        {p.skills.map((sk) => (
+                          <li key={sk}>{sk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="caseBlock">
+                      <p className="caseLabel mono">Resources</p>
+                      <ul className="dotList">
+                        {p.resources.map((r) => (
+                          <li key={r}>{r}</li>
+                        ))}
+                      </ul>
+                      <p className="caseStack mono">{p.stack}</p>
+                    </div>
+                  </div>
+                ),
+              }))}
+            />
           </div>
         </section>
 
@@ -192,25 +249,58 @@ export default function Home() {
           <GridOverlay tone="paper" alpha={0.07} />
           <div className="sectionHeader experienceHeader reveal">
             <div>
-              <p className="sectionLabel on-paper mono">(02) — Experience</p>
+              <p className="sectionLabel on-paper mono">(03) — Experience</p>
               <h2 className="sectionHeading">Where I have worked</h2>
             </div>
             <p className="support">
-              Enterprise networks, virtualized infrastructure, and the teams that keep both
-              running.
+              Open a role for duties and the technical and soft skills it built.
             </p>
           </div>
-          <div className="expRows">
-            {experience.map((row) => (
-              <div key={row.org + row.year} className="expRow reveal">
-                <p className="expYear mono">{row.year}</p>
-                <p className="expOrgCol">
-                  <span className="expOrg">{row.org}</span>
-                  <span className="expRole">{row.role}</span>
-                </p>
-                <p className="expBody">{row.body}</p>
-              </div>
-            ))}
+          <div className="reveal">
+            <Accordion
+              tone="paper"
+              items={experience.map((row) => ({
+                id: row.org,
+                head: (
+                  <>
+                    <span className="expYear mono">{row.year}</span>
+                    <span className="expOrg">{row.org}</span>
+                    <span className="expRole">{row.role}</span>
+                  </>
+                ),
+                peek: <p className="accPeekText">{row.body}</p>,
+                body: row.duties ? (
+                  <div className="caseGrid">
+                    <div className="caseBlock caseBlockWide">
+                      <p className="caseLabel mono">Duties &amp; projects</p>
+                      <ul className="dotList">
+                        {row.duties.map((d) => (
+                          <li key={d}>{d}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="caseBlock">
+                      <p className="caseLabel mono">Technical</p>
+                      <ul className="chipList">
+                        {row.technical?.map((t) => (
+                          <li key={t}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="caseBlock">
+                      <p className="caseLabel mono">Soft skills</p>
+                      <ul className="chipList">
+                        {row.soft?.map((t) => (
+                          <li key={t}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="caseLead">{row.body}</p>
+                ),
+              }))}
+            />
           </div>
         </section>
 
@@ -218,7 +308,7 @@ export default function Home() {
         <section id="skills" className="capabilities">
           <div className="sectionHeader capHeader reveal">
             <div>
-              <p className="sectionLabel on-paper mono">(03) — Capabilities</p>
+              <p className="sectionLabel on-paper mono">(04) — Capabilities</p>
               <h2 className="sectionHeading">Systems I work with</h2>
             </div>
             <p className="support">
@@ -230,11 +320,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Contact */}
+        {/* Contact + documents */}
         <section id="contact" className="contact">
           <GridOverlay tone="ink" alpha={0.07} />
           <div className="contactInner">
-            <p className="contactLabel mono reveal">(04) — Contact</p>
+            <p className="contactLabel mono reveal">(05) — Contact</p>
             <h2 className="contactHeading reveal">Let&rsquo;s build something interesting</h2>
             <div className="contactLinks reveal">
               {contactLinks.map((link) => (
@@ -243,6 +333,10 @@ export default function Home() {
                   <span className="contactLinkValue">{link.value}</span>
                 </a>
               ))}
+            </div>
+            <div id="documents" className="docsStrip reveal">
+              <p className="docsLabel mono">Résumé &amp; papers</p>
+              <DocChips />
             </div>
             <div className="contactCloser wordmarkWrap reveal">
               <p className="wordmark">Cooper Hoy</p>

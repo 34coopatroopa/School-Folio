@@ -23,14 +23,17 @@ export default function Nav({ menuOpen, onToggleMenu }: Props) {
         Cooper
       </a>
       <nav className="navLinks">
+        <a href="#senior-design" className="navMuted mono">
+          Sr Design
+        </a>
         <a href="#work" className="navMuted mono">
           Work
         </a>
-        <a href="#about" className="navMuted mono">
-          About
+        <a href="#experience" className="navMuted mono">
+          Experience
         </a>
-        <a href="#skills" className="navMuted mono">
-          Skills
+        <a href="#documents" className="navMuted mono">
+          Docs
         </a>
         <a href="#contact" className="navMuted mono">
           Contact
